@@ -1,0 +1,54 @@
+- name: include OS specific vars.
+  include_vars: "{{ item }}"
+  with_first_found:
+    - files:
+      - "setup-{{ ansible_distribution }}-{{ ansible_distribution_major_version }}.yml"
+      - "setup-{{ ansible_distribution }}.yml"
+      - "setup-{{ ansible_os_family }}-{{ ansible_distribution_major_version }}.yml"
+      - "setup-{{ ansible_os_family }}.yml"
+      - "setup.yml"
+      skip: false
+
+- name: install prerequisite packages
+  package:
+    name: "{{ item }}"
+  with_items: packages
+
+- name: get src tarball from github
+  git:
+    dest: /tmp/pbspro
+    repo: https://github.com/PBSPro/pbspro.git
+    version: "{{ pbspro_version }}"
+
+- name: build pbspro
+  command: "{{ item }}"
+  args:
+    chdir: /tmp/pbspro
+  with_items:
+    - "./autogen.sh"
+    - "./configure --prefix={{ pbspro_prefix }}"
+    - "make"
+    - "make install"
+    - "/opt/pbs/libexec/pbs_postinstall"
+
+- name: enable mom
+  replace:
+    path: "/etc/pbs.conf"
+    regexp: "^PBS_START_MOM=0"
+    replace: "PBS_START_MOM=1"
+
+- name: set file permissions
+  file:
+    mode: "{{ item.mode }}"
+    path: "{{ item.path }}"
+  with_items:
+    - { mode: 04755, path: {{ pbspro_prefix}}/sbin/pbs_iff }
+    - { mode: 04755, path: {{ pbspro_prefix}}/sbin/pbs_rcp }
+    - { mode: 0700,  path: {{ pbspro_prefix}}/bin/pbs_topologyinfo }
+    - { mode: 0700,  path: {{ pbspro_prefix}}/sbin/pbs_mom }
+    - { mode: 0700,  path: {{ pbspro_prefix}}/sbin/pbs_sched }
+    - { mode: 0700,  path: {{ pbspro_prefix}}/sbin/pbs_server }
+    - { mode: 0755,  path: {{ pbspro_prefix}}/bin/nqs2pbs }
+
+- name: start pbs
+  command: /etc/init.d/pbs start

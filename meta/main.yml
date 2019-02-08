@@ -1,0 +1,17 @@
+galaxy_info:
+  author: Naoyuki Sogo
+  description: build, install, and setup pbspro
+  company: "Long Tail Software LLC"
+  license: MIT
+  min_ansible_version: 1.2
+  platforms:
+    - name: Ubuntu
+      versions:
+        - 16
+  galaxy_tags:
+    - pbspro
+    - pbs
+    - batch
+    - torque
+    - HPC
+    - cluster
