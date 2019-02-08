@@ -1,4 +1,5 @@
 galaxy_info:
+  role_name: pbspro
   author: Naoyuki Sogo
   description: build, install, and setup pbspro
   company: "Long Tail Software LLC"
