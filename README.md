@@ -14,8 +14,10 @@ Role Variables
 --------------
 
 ```
-pbspro_version: latest
-pbspro_use_pre_build: no
+pbspro_prefix: "/opt/pbs"
+pbspro_version: "v19.1.1"
+pbspro_prebuild: False
+pbspro_server: True
 ```
 
 Dependencies
@@ -27,9 +29,12 @@ Example Playbook
 ----------------
 
 ```
-    - hosts: servers
+    - hosts: batchServer
       roles:
-         - { role: username.rolename, x: 42 }
+         - { role: so5.pbspro}
+    - hosts: jobServer
+      roles:
+         - { role: so5.pbspro, pbspro_server: False}
 ```
 
 License

@@ -9,46 +9,69 @@
       - "setup.yml"
       skip: false
 
-- name: install prerequisite packages
+- name: install prerequisite packages to run
   package:
     name: "{{ item }}"
-  with_items: packages
+  with_items: "{{ pbspro_packages_to_run }}"
 
-- name: get src tarball from github
-  git:
-    dest: /tmp/pbspro
-    repo: https://github.com/PBSPro/pbspro.git
-    version: "{{ pbspro_version }}"
-
-- name: build pbspro
-  command: "{{ item }}"
-  args:
-    chdir: /tmp/pbspro
-  with_items:
-    - "./autogen.sh"
-    - "./configure --prefix={{ pbspro_prefix }}"
-    - "make"
-    - "make install"
-    - "/opt/pbs/libexec/pbs_postinstall"
+- block:
+  - name: install prerequisite packages to build
+    package:
+      name: "{{ item }}"
+    with_items: "{{ pbspro_packages_to_build }}"
+  
+  - name: get src tarball from github
+    unarchive:
+      src: "{{ pbspro_src_url[pbspro_version] }}"
+      dest: /tmp
+      remote_src: yes
+      list_files: yes
+    register: pbspro_src_files
+  - debug: var=pbspro_src_files.files[0]
+  - debug: {msg: "{{ pbspro_src_files.files[0] | dirname }}"}
+  
+  - name: build pbspro
+    command: "{{ item }}"
+    args:
+      chdir: "/tmp/{{ pbspro_src_files.files[0] | dirname }}"
+    with_items:
+      - "./autogen.sh"
+      - "./configure --prefix={{ pbspro_prefix }}"
+      - "make"
+      - "make install"
+      - "/opt/pbs/libexec/pbs_postinstall"
+  when: not pbspro_prebuild
 
 - name: enable mom
   replace:
     path: "/etc/pbs.conf"
     regexp: "^PBS_START_MOM=0"
     replace: "PBS_START_MOM=1"
+  when: pbspro_server
+
+- name: disable server, sheduler, and communicator
+  replace:
+    path: "/etc/pbs.conf"
+    regexp: "{{ item.regexp }}"
+    replace: "{{ item.replace }}"
+  with_items:
+    - {regexp: "^PBS_START_SERVER=1", replace: "PBS_START_SERVER=0"}
+    - {regexp: "^PBS_START_SCHED=1",  replace: "PBS_START_SCHED=0"}
+    - {regexp: "^PBS_START_COMM=1",   replace: "PBS_START_COMM=0"}
+  when: not  pbspro_server
 
 - name: set file permissions
   file:
     mode: "{{ item.mode }}"
     path: "{{ item.path }}"
   with_items:
-    - { mode: 04755, path: {{ pbspro_prefix}}/sbin/pbs_iff }
-    - { mode: 04755, path: {{ pbspro_prefix}}/sbin/pbs_rcp }
-    - { mode: 0700,  path: {{ pbspro_prefix}}/bin/pbs_topologyinfo }
-    - { mode: 0700,  path: {{ pbspro_prefix}}/sbin/pbs_mom }
-    - { mode: 0700,  path: {{ pbspro_prefix}}/sbin/pbs_sched }
-    - { mode: 0700,  path: {{ pbspro_prefix}}/sbin/pbs_server }
-    - { mode: 0755,  path: {{ pbspro_prefix}}/bin/nqs2pbs }
+    - { mode: "04755", path: "{{ pbspro_prefix }}/sbin/pbs_iff" }
+    - { mode: "04755", path: "{{ pbspro_prefix }}/sbin/pbs_rcp" }
+    - { mode: "0700",  path: "{{ pbspro_prefix }}/bin/pbs_topologyinfo" }
+    - { mode: "0700",  path: "{{ pbspro_prefix }}/sbin/pbs_mom" }
+    - { mode: "0700",  path: "{{ pbspro_prefix }}/sbin/pbs_sched" }
+    - { mode: "0700",  path: "{{ pbspro_prefix }}/sbin/pbs_server" }
+    - { mode: "0755",  path: "{{ pbspro_prefix }}/bin/nqs2pbs" }
 
 - name: start pbs
   command: /etc/init.d/pbs start

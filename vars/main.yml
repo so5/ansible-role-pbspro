@@ -1,0 +1,20 @@
+pbspro_base_URL: "https://github.com/PBSPro/pbspro/archive"
+pbspro_binary_base_URL: "https://github.com/PBSPro/pbspro/releases/download"
+
+pbspro_src_url:
+  v19.1.1: "{{ pbspro_base_URL }}/v19.1.1.tar.gz"
+  v18.1.3: "{{ pbspro_base_URL }}/v18.1.3.tar.gz"
+  v18.1.2: "{{ pbspro_base_URL }}/v18.1.2.tar.gz"
+  v18.1.1: "{{ pbspro_base_URL }}/v18.1.1.tar.gz"
+  v14.1.2: "{{ pbspro_base_URL }}/v14.1.2.tar.gz"
+  v14.1.0: "{{ pbspro_base_URL }}/v14.1.0.tar.gz"
+
+pbspro_binary_url:
+  centos7:
+    v19.1.1: "{{ pbspro_binary_base_URL }}/v19.1.1/pbspro_19.1.1.centos7.zip"
+    v18.1.3: "{{ pbspro_binary_base_URL }}/v18.1.3/pbspro_18.1.3.centos7.zip"
+    v18.1.2: "{{ pbspro_binary_base_URL }}/v18.1.2/pbspro_18.1.2.centos7.zip"
+  opensuseleap15:
+    v19.1.1: "{{ pbspro_binary_base_URL }}/v19.1.1/pbspro_19.1.1.opensuseleap.15.zip"
+    v18.1.3: "{{ pbspro_binary_base_URL }}/v18.1.3/pbspro_18.1.3.opensuseleap.15.zip"
+    v18.1.2: "{{ pbspro_binary_base_URL }}/v18.1.2/pbspro_18.1.2.opensuseleap.42.3.zip"
