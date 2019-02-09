@@ -7,8 +7,7 @@ build, install and setup pbspro ( https://www.pbspro.org )
 Requirements
 ------------
 
-git module is used to get source tar ball.
-any other prerequesties will be installed by this role
+None. prerequesties for PBS will be installed by this role
 
 Role Variables
 --------------
@@ -19,6 +18,10 @@ pbspro_version: "v19.1.1"
 pbspro_prebuild: False
 pbspro_server: True
 ```
+
+please note, this role is tested only with lates version (v19.1.1 for now)
+
+pbspro\_prebuild is not supported for now. If you turn this variable True, install prebuild binaries instead of building from source.
 
 Dependencies
 ------------
