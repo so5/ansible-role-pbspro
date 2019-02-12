@@ -41,9 +41,11 @@
 - name: enable mom
   replace:
     path: "/etc/pbs.conf"
-    regexp: "^PBS_START_MOM=0"
-    replace: "PBS_START_MOM=1"
-  when: pbspro_server
+    regexp: "{{ item.regexp }}"
+    replace: "{{ item.replace }}"
+  with_items:
+    - {regexp: "^PBS_START_MOM=0", replace: "PBS_START_MOM=1"}
+    - {regexp: "^PBS_SERVER", replace: "PBS_SERVER={{ pbspro_server_hostname }}"}
 
 - name: disable server, sheduler, and communicator
   replace:
