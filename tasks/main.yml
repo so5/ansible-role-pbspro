@@ -19,7 +19,7 @@
     package:
       name: "{{ item }}"
     with_items: "{{ pbspro_packages_to_build }}"
-  
+
   - name: get src tarball from github
     unarchive:
       src: "{{ pbspro_src_url[pbspro_version] }}"
@@ -27,9 +27,7 @@
       remote_src: yes
       list_files: yes
     register: pbspro_src_files
-  - debug: var=pbspro_src_files.files[0]
-  - debug: {msg: "{{ pbspro_src_files.files[0] | dirname }}"}
-  
+
   - name: build pbspro
     command: "{{ item }}"
     args:
@@ -39,7 +37,7 @@
       - "./configure --prefix={{ pbspro_prefix }}"
       - "make"
       - "make install"
-      - "/opt/pbs/libexec/pbs_postinstall"
+      - "{{ pbspro_prefix }}/libexec/pbs_postinstall"
   when: not pbspro_prebuild
 
 - name: enable mom
