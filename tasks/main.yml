@@ -11,14 +11,12 @@
 
 - name: install prerequisite packages to run
   package:
-    name: "{{ item }}"
-  with_items: "{{ pbspro_packages_to_run }}"
+    name: "{{ pbspro_packages_to_run }}"
 
 - block:
   - name: install prerequisite packages to build
     package:
-      name: "{{ item }}"
-    with_items: "{{ pbspro_packages_to_build }}"
+      name: "{{ pbspro_packages_to_build }}"
 
   - name: get src tarball from github
     unarchive:
