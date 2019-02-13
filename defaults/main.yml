@@ -2,3 +2,4 @@ pbspro_prefix: "/opt/pbs"
 pbspro_version: "v19.1.1"
 pbspro_prebuild: False
 pbspro_server: True
+pbspro_slave_nodes: []

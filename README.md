@@ -18,6 +18,7 @@ pbspro_version: "v19.1.1"
 pbspro_prebuild: False
 pbspro_server: True
 pbspro_server_hostname: "192.168.0.1"
+pbspro_slave_nodes: []
 ```
 
 please note ```pbspro_server_hostname``` is not set by default. 
@@ -26,6 +27,8 @@ so you have to set this variable explicitly  in multi node encironment
 
 acceptable values for ```pbspro_version``` is in vars/main.yml but this role 
 is tested only with lates version (v19.1.1 for now)
+
+```pbspro_slave_nodes``` is list of slavenode's hostnames. this value will be used by qmgr to create vnode setting
 
 ```pbspro_prebuild``` is not supported for now. If you turn this variable True, install prebuild binaries instead of building from source.
 
