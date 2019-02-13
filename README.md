@@ -20,12 +20,14 @@ pbspro_server: True
 pbspro_server_hostname: "192.168.0.1"
 ```
 
-pbspro\_server\_hostname is not defined by default. you have to pass this value to the role, otherwise
-child node can not communicate with pbs pro server!
+please note ```pbspro_server_hostname``` is not set by default. 
+if it is not set ```PBS_SERVER``` in /etc/pbs.conf is set to localhost. 
+so you have to set this variable explicitly  in multi node encironment
 
-please note, this role is tested only with lates version (v19.1.1 for now)
+acceptable values for ```pbspro_version``` is in vars/main.yml but this role 
+is tested only with lates version (v19.1.1 for now)
 
-pbspro\_prebuild is not supported for now. If you turn this variable True, install prebuild binaries instead of building from source.
+```pbspro_prebuild``` is not supported for now. If you turn this variable True, install prebuild binaries instead of building from source.
 
 Dependencies
 ------------
