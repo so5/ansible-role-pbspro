@@ -69,3 +69,4 @@
 - name: add slave nodes to qmgr
   command: qmgr -c "create node {{ item }}"
   with_items: "{{ pbspro_slave_nodes }}"
+  delegate_to: "{{ pbspro_server_hostname }}"
