@@ -38,7 +38,7 @@
       - "{{ pbspro_prefix }}/libexec/pbs_postinstall"
   when: not pbspro_prebuild
 
-- name: rewrite pbs.conf to enable or disable PBS Server, scheduler, communcator and mom
+- name: rewrite pbs.conf to enable or disable PBS server, scheduler, communcator and mom
   replace:
     path: "/etc/pbs.conf"
     regexp: "{{ item.regexp }}"
