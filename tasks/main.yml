@@ -38,14 +38,14 @@
       - "{{ pbspro_prefix }}/libexec/pbs_postinstall"
   when: not pbspro_prebuild
 
-- name: set server name, enable MOM, disable server, sheduler, and communicator on slave node
+- name: rewrite pbs.conf to enable or disable PBS Server, scheduler, communcator and mom
   replace:
     path: "/etc/pbs.conf"
     regexp: "{{ item.regexp }}"
     replace: "{{ item.replace }}"
   with_items:
     - {regexp: "^PBS_SERVER=.*$", replace: "PBS_SERVER={{ pbspro_server_hostname }}"}
-    - {regexp: "^PBS_START_MOM=0", replace: "PBS_START_MOM=1"}
+    - {regexp: "^PBS_START_MOM=0", replace: "PBS_START_MOM={{ pbspro_server and pbspro_use_server_as_worker | ternary('0','1') }}"}
     - {regexp: "^PBS_START_SERVER=1", replace: "PBS_START_SERVER={{ pbspro_server | ternary('1','0') }}"}
     - {regexp: "^PBS_START_SCHED=1",  replace: "PBS_START_SCHED={{ pbspro_server | ternary('1','0') }}"}
     - {regexp: "^PBS_START_COMM=1",   replace: "PBS_START_COMM={{ pbspro_server | ternary('1','0') }}"}
@@ -66,8 +66,8 @@
 - name: start pbs
   command: /etc/init.d/pbs start
 
-- name: add slave nodes to qmgr
+- name: add child nodes to qmgr
   command: qmgr -c "create node {{ item }}"
-  with_items: "{{ pbspro_slave_nodes }}"
+  with_items: "{{ pbspro_child_nodes }}"
   delegate_to: "{{ pbspro_server_hostname }}"
   run_once: True
