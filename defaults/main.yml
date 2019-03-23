@@ -2,5 +2,5 @@ pbspro_prefix: "/opt/pbs"
 pbspro_version: "v19.1.1"
 pbspro_prebuild: False
 pbspro_server: True
-pbspro_use_server_as_worker: True
+pbspro_run_job_on_server: True
 pbspro_child_nodes: []
