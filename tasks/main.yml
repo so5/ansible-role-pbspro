@@ -39,10 +39,12 @@
   when: not pbspro_prebuild
 
 - name: rewrite pbs.conf to enable or disable PBS server, scheduler, communcator and mom
-  replace:
+  lineinfile:
     path: "/etc/pbs.conf"
+    state: "present"
+    backrefs: True
     regexp: "{{ item.regexp }}"
-    replace: "{{ item.replace }}"
+    line: "{{ item.replace }}"
   with_items:
     - {regexp: "^PBS_SERVER=.*$", replace: "PBS_SERVER={{ pbspro_server_hostname }}"}
     - {regexp: "^PBS_START_MOM=*$", replace: "PBS_START_MOM={{ (pbspro_server and pbspro_run_job_on_server) | ternary('0','1') }}"}
