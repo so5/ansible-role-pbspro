@@ -20,6 +20,7 @@ pbspro_server: True
 pbspro_server_hostname: "192.168.0.1"
 pbspro_child_nodes: []
 pbspro_run_job_on_server: True
+pbspro_qmgr_cmds: []
 ```
 
 please note ```pbspro_server_hostname``` is not set by default.
@@ -29,9 +30,10 @@ so you have to set this variable explicitly  in multi node encironment
 acceptable values for ```pbspro_version``` is in vars/main.yml but this role
 is tested only with v19.1.1 for now
 
-```pbspro_child_nodes``` is list of child node's hostnames. this value will be used by qmgr to create vnode setting
-```pbspro_run_job_on_server``` is flag variable, if true, pbsserver node will accept jobs(MOM will be started on server node). default value is True
-```pbspro_prebuild``` is not supported for now. If you turn this variable True, install prebuild binaries instead of building from source.
+- ```pbspro_child_nodes``` is list of child node's hostnames. this value will be used by qmgr to create vnode setting.
+- ```pbspro_qmgr_cmds``` is list of qmgre commands. if this value is set, qmgr -c will be issued with each element at the end of play.
+- ```pbspro_run_job_on_server``` is flag variable, if true, pbsserver node will accept jobs(MOM will be started on server node). default value is True.
+- ```pbspro_prebuild``` is not supported for now. If you turn this variable True, install prebuild binaries instead of building from source.
 
 
 Dependencies

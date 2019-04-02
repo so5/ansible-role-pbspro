@@ -4,3 +4,4 @@ pbspro_prebuild: False
 pbspro_server: True
 pbspro_run_job_on_server: True
 pbspro_child_nodes: []
+pbspro_qmgr_cmds: []

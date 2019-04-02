@@ -72,3 +72,9 @@
   with_items: "{{ pbspro_child_nodes }}"
   delegate_to: "{{ pbspro_server_hostname }}"
   run_once: True
+
+- name: do additional qmgr cmmand
+  command: qmgr -c "{{ item }}"
+  with_items: "{{ pbspro_qmgr_cmds }}"
+  delegate_to: "{{ pbspro_server_hostname }}"
+  run_once: True
