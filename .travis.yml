@@ -6,10 +6,9 @@ install:
 - pip install ansible
 before_script:
 - sudo docker pull ${distribution}:${version}
-- sudo docker build --no-cache --rm --tag=${distribution}-${version}:ansible .
 script:
 - docker run -d -v /sys/fs/cgroup:/sys/fs/cgroup:ro --volume="${PWD}":/tmp
-- docker exec ansible-playbook ./tests/test.yml
+- docker exec ansible-playbook /tmp/tests/test.yml
 services:
 - docker
 env:
