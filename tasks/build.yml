@@ -1,0 +1,22 @@
+- name: install prerequisite packages to build
+  package:
+    name: "{{ pbspro_packages_to_build }}"
+
+- name: get src tarball from github
+  unarchive:
+    src: "{{ pbspro_src_url[pbspro_version] }}"
+    dest: /tmp
+    remote_src: yes
+    list_files: yes
+  register: pbspro_src_files
+
+- name: build pbspro
+  command: "{{ item }}"
+  args:
+    chdir: "/tmp/{{ pbspro_src_files.files[0] | dirname }}"
+  with_items:
+    - "./autogen.sh"
+    - "./configure --prefix={{ pbspro_prefix }}"
+    - "make"
+    - "make install"
+    - "{{ pbspro_prefix }}/libexec/pbs_postinstall"

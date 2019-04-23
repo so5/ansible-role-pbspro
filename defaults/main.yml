@@ -5,3 +5,5 @@ pbspro_server: True
 pbspro_run_job_on_server: True
 pbspro_child_nodes: []
 pbspro_qmgr_cmds: []
+pbspro_installation: True
+pbspro_setup: True

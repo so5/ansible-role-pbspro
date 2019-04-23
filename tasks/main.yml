@@ -7,74 +7,55 @@
       - "setup-{{ ansible_os_family }}-{{ ansible_distribution_major_version }}.yml"
       - "setup-{{ ansible_os_family }}.yml"
       - "setup.yml"
-      skip: false
-
-- name: install prerequisite packages to run
-  package:
-    name: "{{ pbspro_packages_to_run }}"
 
 - block:
-  - name: install prerequisite packages to build
+  - name: install prerequisite packages to run
     package:
-      name: "{{ pbspro_packages_to_build }}"
+      name: "{{ pbspro_packages_to_run }}"
+  
+  - include_tasks: build.yml
+    when: not pbspro_prebuild
+  when: pbspro_installation
 
-  - name: get src tarball from github
-    unarchive:
-      src: "{{ pbspro_src_url[pbspro_version] }}"
-      dest: /tmp
-      remote_src: yes
-      list_files: yes
-    register: pbspro_src_files
-
-  - name: build pbspro
-    command: "{{ item }}"
-    args:
-      chdir: "/tmp/{{ pbspro_src_files.files[0] | dirname }}"
+- block:
+  - name: rewrite pbs.conf to enable or disable PBS server, scheduler, communcator and mom
+    lineinfile:
+      path: "/etc/pbs.conf"
+      state: "present"
+      regexp: "{{ item.regexp }}"
+      line: "{{ item.replace }}"
     with_items:
-      - "./autogen.sh"
-      - "./configure --prefix={{ pbspro_prefix }}"
-      - "make"
-      - "make install"
-      - "{{ pbspro_prefix }}/libexec/pbs_postinstall"
-  when: not pbspro_prebuild
-
-- name: rewrite pbs.conf to enable or disable PBS server, scheduler, communcator and mom
-  lineinfile:
-    path: "/etc/pbs.conf"
-    state: "present"
-    regexp: "{{ item.regexp }}"
-    line: "{{ item.replace }}"
-  with_items:
-    - {regexp: "^PBS_SERVER=", replace: "PBS_SERVER={{ pbspro_server_hostname }}"}
-    - {regexp: "^PBS_START_MOM=", replace: "PBS_START_MOM={{ (pbspro_server and  not pbspro_run_job_on_server) | ternary('0','1') }}"}
-    - {regexp: "^PBS_START_SERVER=", replace: "PBS_START_SERVER={{ pbspro_server | ternary('1','0') }}"}
-    - {regexp: "^PBS_START_SCHED=",  replace: "PBS_START_SCHED={{ pbspro_server | ternary('1','0') }}"}
-    - {regexp: "^PBS_START_COMM=",   replace: "PBS_START_COMM={{ pbspro_server | ternary('1','0') }}"}
-
-- name: set file permissions
-  file:
-    mode: "{{ item.mode }}"
-    path: "{{ item.path }}"
-  with_items:
-    - { mode: "04755", path: "{{ pbspro_prefix }}/sbin/pbs_iff" }
-    - { mode: "04755", path: "{{ pbspro_prefix }}/sbin/pbs_rcp" }
-    - { mode: "0700",  path: "{{ pbspro_prefix }}/bin/pbs_topologyinfo" }
-    - { mode: "0700",  path: "{{ pbspro_prefix }}/sbin/pbs_mom" }
-    - { mode: "0700",  path: "{{ pbspro_prefix }}/sbin/pbs_sched" }
-    - { mode: "0700",  path: "{{ pbspro_prefix }}/sbin/pbs_server" }
-    - { mode: "0755",  path: "{{ pbspro_prefix }}/bin/nqs2pbs" }
-
-- name: start pbs
-  command: /etc/init.d/pbs start
-
-- name: add child nodes to qmgr
-  command: qmgr -c "create node {{ item }}"
-  with_items: "{{ pbspro_child_nodes }}"
-  delegate_to: "{{ pbspro_server_hostname }}"
-  run_once: True
-
-- name: do additional qmgr cmmand
-  command: qmgr -c "{{ item }}"
-  with_items: "{{ pbspro_qmgr_cmds }}"
-  delegate_to: "{{ pbspro_server_hostname }}"
-  run_once: True
+      - {regexp: "^PBS_SERVER=", replace: "PBS_SERVER={{ pbspro_server_hostname }}"}
+      - {regexp: "^PBS_START_MOM=", replace: "PBS_START_MOM={{ (pbspro_server and  not pbspro_run_job_on_server) | ternary('0','1') }}"}
+      - {regexp: "^PBS_START_SERVER=", replace: "PBS_START_SERVER={{ pbspro_server | ternary('1','0') }}"}
+      - {regexp: "^PBS_START_SCHED=",  replace: "PBS_START_SCHED={{ pbspro_server | ternary('1','0') }}"}
+      - {regexp: "^PBS_START_COMM=",   replace: "PBS_START_COMM={{ pbspro_server | ternary('1','0') }}"}
+  
+  - name: set file permissions
+    file:
+      mode: "{{ item.mode }}"
+      path: "{{ item.path }}"
+    with_items:
+      - { mode: "04755", path: "{{ pbspro_prefix }}/sbin/pbs_iff" }
+      - { mode: "04755", path: "{{ pbspro_prefix }}/sbin/pbs_rcp" }
+      - { mode: "0700",  path: "{{ pbspro_prefix }}/bin/pbs_topologyinfo" }
+      - { mode: "0700",  path: "{{ pbspro_prefix }}/sbin/pbs_mom" }
+      - { mode: "0700",  path: "{{ pbspro_prefix }}/sbin/pbs_sched" }
+      - { mode: "0700",  path: "{{ pbspro_prefix }}/sbin/pbs_server" }
+      - { mode: "0755",  path: "{{ pbspro_prefix }}/bin/nqs2pbs" }
+  
+  - name: start pbs
+    command: /etc/init.d/pbs start
+  
+  - name: add child nodes to qmgr
+    command: qmgr -c "create node {{ item }}"
+    with_items: "{{ pbspro_child_nodes }}"
+    delegate_to: "{{ pbspro_server_hostname }}"
+    run_once: True
+  
+  - name: do additional qmgr cmmand
+    command: qmgr -c "{{ item }}"
+    with_items: "{{ pbspro_qmgr_cmds }}"
+    delegate_to: "{{ pbspro_server_hostname }}"
+    run_once: True
+  when: pbspro_setup

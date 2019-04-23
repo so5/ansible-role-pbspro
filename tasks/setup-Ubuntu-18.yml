@@ -1,0 +1,35 @@
+pbspro_packages_to_build:
+  - gcc
+  - make
+  - libtool
+  - libhwloc-dev
+  - libx11-dev
+  - libxt-dev
+  - libedit-dev
+  - libical-dev
+  - ncurses-dev
+  - perl
+  - postgresql-server-dev-all
+  - postgresql-contrib
+  - python-dev
+  - tcl-dev
+  - tk-dev
+  - swig
+  - libexpat-dev
+  - libssl-dev
+  - libxext-dev
+  - libxft-dev
+  - autoconf
+  - automake
+
+pbspro_packages_to_run:
+  - expat
+  - libedit2
+  - postgresql
+  - python
+  - postgresql-contrib
+  - sendmail-bin
+  - sudo
+  - tcl
+  - tk
+  - libical2

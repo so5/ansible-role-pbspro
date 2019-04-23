@@ -1,0 +1,39 @@
+language: python
+sudo: true
+python:
+- '2.7'
+install:
+- pip install ansible
+before_script:
+- sudo docker pull ${distribution}:${version}
+- sudo docker build --no-cache --rm  --tag=${distribution}-${version}:ansible travis
+script:
+- docker run -d -v /sys/fs/cgroup:/sys/fs/cgroup:ro --volume="${PWD}":/tmp
+- docker exec ansible-playbook ./tests/test.yml
+services:
+- docker
+env:
+- distribution: centos
+  version: 7
+- distribution: fedora
+  version: 26
+- distribution: fedora
+  version: 25
+- distribution: fedora
+  version: 24
+- distribution: ubuntu
+  version: bionic
+- distribution: ubuntu
+  version: xenial
+- distribution: ubuntu
+  version: trusty
+- distribution: debian
+  version: stretch
+- distribution: debian
+  version: jessie
+- distribution: opensuse/leap
+  version: 15
+notifications:
+  mail: false
+  slack:
+    secure: Y6qRX1TNS8/o3TL7Hf0vnPzcC50/7pHdVk3pye5c9OTKjme65riDkwHt5VMo/HKgWv/gVkLUcEI4fkTzxm8jB5ykTQuX03KlpElzx8183rU5lYxw9wAlUq6umr+1iyQcnY+6vwtfHsDsocYF1Ku/JHjTcE/7o1wbofNeCUlHEfGBpTDRZDT4oFWRjG56WACx5D++UqivZ2rooJjxHZSkQ5YBkReD7KlAxf3UNHRxAcDPbFzWq+t5k2fMBesAeD2AHHeGTbbEioMULPhRbEdptr1LxrO2z/jrhwVtM47vZTVUiHSMTBemLXfCP79zwMVR1m0eml5fbBRE+RphwqWRWo/z817zAY+8xcfPpnAB2OOmu0x3lGj4QtCoQe/3FFG9VwCMzfOP5mwW7dOA7Up/p3YqeuW6Vs33lnU8IOOlqddduL6ZB0IA0PdZIDLHs20gD6Lb4fty6d5Nw2BIS1FNJn8Qc1Tdis1zWVRL4jrNWnyePCa4kwYH4waAouoaJHjZfFDx1B99BGAt1Jm8Nnq0WSZiDZSAEXFHHSgZlx6J3k6bB/h96XSh8/dUdMgRteiOHNIDNzF+7WHXDsyhdJ5kLXZp65zDtqrUfD9cRlKoO2UN43I3cHmVA3QM2tweCKBem8DS4bi/QBfF62j0bl/EPYcCaIT0NS3hJL3BSVVR6Gc=
