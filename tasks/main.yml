@@ -9,15 +9,15 @@
       - "setup.yml"
 
 - block:
-  - name: install prerequisite packages to run
-    package:
-      name: "{{ pbspro_packages_to_run }}"
-  
   - include_tasks: build.yml
     when: not pbspro_prebuild
   when: pbspro_installation
 
 - block:
+  - name: install prerequisite packages to run
+    package:
+      name: "{{ pbspro_packages_to_run }}"
+  
   - name: rewrite pbs.conf to enable or disable PBS server, scheduler, communcator and mom
     lineinfile:
       path: "/etc/pbs.conf"
