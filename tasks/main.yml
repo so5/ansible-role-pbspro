@@ -8,10 +8,13 @@
       - "setup-{{ ansible_os_family }}.yml"
       - "setup.yml"
 
+- debug: var=pbspro_installation
+- debug: var=pbspro_setup
+
 - block:
   - include_tasks: build.yml
-    when: pbspro_prebuild is not true
-  when: pbspro_installation is true
+    when: not pbspro_prebuild
+  when: pbspro_installation
 
 - include_tasks: config.yml
-  when: pbspro_setup is true
+  when: pbspro_setup
